@@ -1,13 +1,13 @@
 version: '3.8'
 
 services:
-  agentic-dossier:
+  backend:
     build: .
     ports:
       - "8000:8000"
     volumes:
-      - ./data:/app/data
-      - ./frontend:/app/frontend
-      - ./backend:/app/backend
+      - ./backend:/app
+      - ./data:/data
+      - ./frontend:/frontend
     environment:
-      - APP_ENV=development
+      - PYTHONPATH=/app
