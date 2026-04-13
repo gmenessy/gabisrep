@@ -6,8 +6,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./data:/app/data
-      - ./frontend:/app/frontend
       - ./backend:/app/backend
+      - ./frontend:/app/frontend
+      - ./data:/app/data
     environment:
-      - APP_ENV=development
+      - PYTHONPATH=/app/backend
