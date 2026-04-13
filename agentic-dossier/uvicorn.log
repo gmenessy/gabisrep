@@ -1,0 +1,15 @@
+INFO:     Started server process [134050]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:49950 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49950 - "GET /style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49960 - "GET /cleandocs_pipeline.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49970 - "GET /app.js HTTP/1.1" 200 OK
+Received ingestion request for tenant tenant-default, file dummy.pdf
+Metrics: {'original_paragraphs': 83, 'removed_boilerplate': 19, 'textrank_retained': 36, 'simhash_removed': 5}
+INFO:     127.0.0.1:49970 - "POST /api/v1/dossier/tenant-default/documents HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [134050]

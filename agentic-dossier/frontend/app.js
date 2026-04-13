@@ -1,85 +1,93 @@
-/**
- * Agentic Dossier - Frontend Application Stub
- */
-
 document.addEventListener('DOMContentLoaded', () => {
+    const fileUpload = document.getElementById('pdf-upload');
+    const fileChosen = document.getElementById('file-chosen');
     const uploadForm = document.getElementById('upload-form');
-    const fileInput = document.getElementById('pdf-upload');
-    const statusMessage = document.getElementById('status-message');
-    const consoleOutput = document.getElementById('console-output');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsContainer = document.getElementById('results');
 
-    // Tenant ID for data isolation - mock value for this stub
-    const MOCK_TENANT_ID = 'tenant_12345';
-
-    function logToConsole(message, data = null) {
-        let text = message;
-        if (data) {
-            text += '\n' + JSON.stringify(data, null, 2);
+    // Update file chosen text
+    fileUpload.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+            if (this.files.length === 1) {
+                fileChosen.textContent = this.files[0].name;
+            } else {
+                fileChosen.textContent = `${this.files.length} files selected`;
+            }
+        } else {
+            fileChosen.textContent = 'No files chosen';
         }
-        console.log(text);
-
-        const timestamp = new Date().toLocaleTimeString();
-        consoleOutput.textContent = `[${timestamp}] ${text}\n` + consoleOutput.textContent;
-    }
+    });
 
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        if (fileInput.files.length === 0) {
-            statusMessage.textContent = 'Please select at least one file.';
+        const files = fileUpload.files;
+        if (!files || files.length === 0) {
+            addStatusMessage('Please select at least one PDF file.', 'error');
             return;
         }
 
-        const files = Array.from(fileInput.files);
-        statusMessage.textContent = `Processing ${files.length} file(s)...`;
-        logToConsole(`Starting upload for ${files.length} file(s)`);
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Processing...';
+        resultsContainer.innerHTML = ''; // Clear previous results
 
-        for (const file of files) {
+        const tenantId = "tenant-default"; // Hardcoded for this stub
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            addStatusMessage(`Processing ${file.name} (simulated CleanDocs pipeline)...`, 'processing');
+
             try {
-                logToConsole(`Mocking CleanDocs pipeline for file: ${file.name}...`);
-
-                // Mocking the CleanDocs markdown generation and metrics
-                const mockCleanedMarkdown = `# ${file.name}\n\nThis is mocked text that represents the output of the CleanDocs pipeline locally processing the PDF.`;
-                const mockMetrics = {
-                    original_paragraphs: Math.floor(Math.random() * 50) + 10,
-                    removed_boilerplate: Math.floor(Math.random() * 10) + 2,
-                    textrank_retained: Math.floor(Math.random() * 20) + 5,
-                    simhash_removed: Math.floor(Math.random() * 5)
-                };
-
-                const requestBody = {
+                // Simulate the CleanDocs pipeline processing locally
+                const dummyPayload = {
                     filename: file.name,
-                    raw_markdown: mockCleanedMarkdown,
-                    metrics: mockMetrics,
-                    tenant_id: MOCK_TENANT_ID
+                    raw_markdown: `# Dummy Markdown for ${file.name}\n\nThis is simulated cleaned text from the CleanDocs pipeline.`,
+                    metrics: {
+                        original_paragraphs: Math.floor(Math.random() * 100) + 50,
+                        removed_boilerplate: Math.floor(Math.random() * 20) + 5,
+                        textrank_retained: Math.floor(Math.random() * 30) + 10,
+                        simhash_removed: Math.floor(Math.random() * 15) + 2
+                    },
+                    tenant_id: tenantId
                 };
 
-                logToConsole(`Sending POST request for ${file.name} to /api/v1/dossier/${MOCK_TENANT_ID}/documents`);
-
-                const response = await fetch(`/api/v1/dossier/${MOCK_TENANT_ID}/documents`, {
+                // Send POST request to FastAPI backend
+                const response = await fetch(`/api/v1/dossier/${tenantId}/documents`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(requestBody)
+                    body: JSON.stringify(dummyPayload)
                 });
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
 
-                const responseData = await response.json();
-                logToConsole(`Success for ${file.name}:`, responseData);
+                const result = await response.json();
+                console.log('Backend response:', result);
+
+                addStatusMessage(
+                    `Successfully ingested ${file.name}. Document ID: ${result.document_id}, Status: ${result.status}, Lang: ${result.language_detected}`,
+                    'success'
+                );
 
             } catch (error) {
-                console.error('Upload failed:', error);
-                logToConsole(`Error uploading ${file.name}: ${error.message}`);
-                statusMessage.textContent = 'Upload failed. See console for details.';
+                console.error(`Error processing ${file.name}:`, error);
+                addStatusMessage(`Failed to process ${file.name}: ${error.message}`, 'error');
             }
         }
 
-        statusMessage.textContent = 'All selected files processed.';
-        // Reset file input
-        fileInput.value = '';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Ingest Documents';
+        fileUpload.value = ''; // Reset file input
+        fileChosen.textContent = 'No files chosen';
     });
+
+    function addStatusMessage(message, type) {
+        const statusDiv = document.createElement('div');
+        statusDiv.className = `status-message status-${type}`;
+        statusDiv.textContent = message;
+        resultsContainer.appendChild(statusDiv);
+    }
 });

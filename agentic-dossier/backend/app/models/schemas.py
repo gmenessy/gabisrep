@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from typing import Dict
 from uuid import UUID
-from typing import Dict, Any
 
-class IngestionMetrics(BaseModel):
+class DocumentIngestMetrics(BaseModel):
     original_paragraphs: int
     removed_boilerplate: int
     textrank_retained: int
@@ -10,9 +10,9 @@ class IngestionMetrics(BaseModel):
 
 class DocumentIngestRequest(BaseModel):
     filename: str
-    raw_markdown: str = Field(..., description="The cleaned text from the frontend")
-    metrics: IngestionMetrics
-    tenant_id: str = Field(..., description="For strict data isolation")
+    raw_markdown: str
+    metrics: DocumentIngestMetrics
+    tenant_id: str
 
 class DocumentIngestResponse(BaseModel):
     document_id: UUID
