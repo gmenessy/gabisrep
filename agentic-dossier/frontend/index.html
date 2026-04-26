@@ -4,32 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agentic Dossier - Document Ingestion</title>
-    <!-- Preconnect for fonts -->
+    <!-- Import 'DM Sans' font as per Corporate Identity -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
+    <!-- Local styles -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Agentic Dossier</h1>
+    <header class="header">
+        <h1>Agentic Dossier Ingestion</h1>
         <p>Air-gapped, privacy-first document analysis system.</p>
+    </header>
 
+    <main class="container">
         <section class="upload-section">
-            <h2>Upload Document</h2>
-            <form id="upload-form">
-                <input type="file" id="pdf-upload" multiple accept=".pdf,.txt,.md">
-                <button type="submit" id="submit-btn">Ingest Documents</button>
+            <h2>Upload Documents</h2>
+            <form id="ingest-form">
+                <div class="file-input-wrapper">
+                    <label for="pdf-upload">Select PDFs:</label>
+                    <input type="file" id="pdf-upload" multiple accept="application/pdf">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="submit-btn" class="btn-primary">Process and Ingest</button>
+                </div>
             </form>
-            <div id="status-message"></div>
         </section>
 
         <section class="results-section">
-            <h2>Results Console</h2>
-            <pre id="console-output"></pre>
+            <h2>Results</h2>
+            <div id="results-log" class="log-container">
+                <!-- Log output will be appended here -->
+            </div>
         </section>
-    </div>
+    </main>
 
-    <!-- Scripts -->
+    <!-- Local scripts -->
     <script src="cleandocs_pipeline.js"></script>
     <script src="app.js"></script>
 </body>
