@@ -1,160 +1,65 @@
-/* Agentic Dossier - Styling matching CI colors */
-
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-
 :root {
-    /* CI Colors */
-    --color-midnight: #003A40;
-    --color-midnight-80: rgb(51, 97, 102);
-    --color-midnight-60: rgb(102, 137, 140);
-    --color-midnight-40: rgb(152, 176, 179);
-    --color-midnight-5: rgb(242, 245, 245);
-
-    --color-lagoon: #00B2A9;
-    --color-lagoon-80: rgb(51, 193, 186);
-    --color-lagoon-60: rgb(109, 209, 203);
-    --color-lagoon-40: rgb(153, 224, 220);
-    --color-darklagoon: #009390;
-
-    --color-amarillo: #F1C400;
-    --color-darkamarillo: #F0AF00;
-
-    --color-basil: #00965E;
-
-    --gray-100: #f8f9fa;
-    --gray-200: #F2F2F2;
-    --gray-300: #dee2e6;
-    --gray-400: #ced4da;
-    --gray-500: #adb5bd;
-    --gray-600: #6c757d;
-    --gray-700: #495057;
-    --gray-800: #343a40;
-    --gray-900: #212529;
-
-    --white: #fff;
-    --black: #000;
-    --red: #d90000;
-
-    --lightblue: #f2f5f5;
-    --color-grey-01: #b1b8bb;
-
-    /* Semantic CI Color Mappings */
-    --cd-color1: var(--color-midnight); /* Primary Headline / Text */
-    --cd-color2: var(--color-lagoon);   /* Links / Clickables */
-    --cd-color3: var(--gray-400);
-    --cd-color4: var(--color-amarillo); /* Buttons */
-    --cd-color5: var(--lightblue);      /* Backgrounds / Lines */
-    --cd-color6: var(--black);
-    --cd-color7: #e73f0c;
-
-    /* Typografie */
-    --font-main-family: "DM Sans", Arial, Helvetica, sans-serif;
-    --body-bg: var(--white);
-    --body-color: var(--gray-900);
+    --lagoon: #00B2A9;
+    --midnight: #003A40;
+    --amarillo: #F1C400;
+    --basil: #00965E;
 }
 
 body {
-    font-family: var(--font-main-family);
-    background-color: var(--body-bg);
-    color: var(--body-color);
-    line-height: 1.5;
+    font-family: 'DM Sans', sans-serif;
+    background-color: #f4f7f6;
+    color: var(--midnight);
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
 .container {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: var(--cd-color5);
+    background-color: white;
+    padding: 2rem;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 58, 64, 0.1); /* Subtle midnight shadow */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 500px;
+    width: 100%;
 }
 
 h1 {
-    color: var(--cd-color1);
-    font-size: 3.125rem; /* main-headline50 */
+    color: var(--lagoon);
     margin-top: 0;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
 }
 
-p {
-    font-size: 1.25rem; /* line-break-text20 */
-    color: var(--gray-700);
+.form-group {
+    margin-bottom: 1rem;
 }
 
-h2 {
-    color: var(--cd-color1);
-    font-size: 2.1875rem; /* sub-headline35 */
-    border-bottom: 2px solid var(--cd-color2);
-    padding-bottom: 10px;
-    margin-top: 40px;
-    font-weight: 600;
-}
-
-.upload-section {
-    margin-top: 30px;
-    padding: 30px;
-    background-color: var(--white);
-    border: 2px dashed var(--gray-400);
-    border-radius: 8px;
-    text-align: center;
-}
-
-#pdf-upload {
+input[type="file"] {
     display: block;
-    margin: 20px auto;
-    font-family: var(--font-main-family);
-    font-size: 1rem;
-    color: var(--cd-color1);
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-#submit-btn {
-    background-color: var(--cd-color4); /* amarillo */
-    color: var(--cd-color1); /* dark text for contrast on yellow */
-    font-family: var(--font-main-family);
-    font-weight: bold;
-    padding: 12px 24px;
+button {
+    background-color: var(--lagoon);
+    color: white;
     border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-family: 'DM Sans', sans-serif;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1.1rem;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease;
 }
 
-#submit-btn:hover {
-    background-color: var(--color-darkamarillo);
-    transform: translateY(-1px);
-}
-
-#submit-btn:active {
-    transform: translateY(1px);
-    box-shadow: none;
+button:hover {
+    background-color: var(--midnight);
 }
 
 #status-message {
-    margin-top: 15px;
-    font-weight: bold;
-    color: var(--red);
-    font-size: 1.1rem;
-}
-
-.results-section {
-    margin-top: 40px;
-}
-
-#console-output {
-    background-color: var(--cd-color1); /* midnight */
-    color: var(--color-lagoon-40); /* lighter lagoon text */
-    padding: 20px;
-    border-radius: 6px;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    max-height: 400px;
-    overflow-y: auto;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 0.9375rem; /* small-text15 */
-    border-left: 4px solid var(--cd-color2);
+    margin-top: 1rem;
+    font-weight: 500;
 }
