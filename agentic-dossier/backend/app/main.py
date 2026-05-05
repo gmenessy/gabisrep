@@ -13,11 +13,5 @@ app = FastAPI(title="Agentic Dossier", description="Air-gapped, privacy-first do
 # Include routers
 app.include_router(endpoints_router)
 
-# Define paths
-FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend")
-
-# Ensure the frontend directory exists before mounting
-if os.path.isdir(FRONTEND_DIR):
-    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
-else:
-    logging.warning(f"Frontend directory not found at {FRONTEND_DIR}. Please make sure it exists.")
+# Mount the frontend directory using a relative path
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
