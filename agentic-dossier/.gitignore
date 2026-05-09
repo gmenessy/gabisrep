@@ -1,8 +1,4 @@
 data/
 __pycache__/
-*.pyc
-
-# Test artifacts
-backend_server.log
-uvicorn_output.log
-dummy.pdf
+*.py[cod]
+*.class
