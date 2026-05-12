@@ -3,33 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agentic Dossier - Document Ingestion</title>
-    <!-- Preconnect for fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Agentic Dossier</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Local font for DM Sans (mocked for air-gapped system) -->
+    <!-- <link rel="stylesheet" href="fonts.css"> -->
 </head>
 <body>
     <div class="container">
-        <h1>Agentic Dossier</h1>
-        <p>Air-gapped, privacy-first document analysis system.</p>
+        <header>
+            <h1>Agentic Dossier</h1>
+            <p>Privacy-first document analysis</p>
+        </header>
 
-        <section class="upload-section">
-            <h2>Upload Document</h2>
-            <form id="upload-form">
-                <input type="file" id="pdf-upload" multiple accept=".pdf,.txt,.md">
-                <button type="submit" id="submit-btn">Ingest Documents</button>
-            </form>
-            <div id="status-message"></div>
-        </section>
-
-        <section class="results-section">
-            <h2>Results Console</h2>
-            <pre id="console-output"></pre>
-        </section>
+        <main>
+            <section class="upload-section">
+                <h2>Upload Documents</h2>
+                <div class="upload-controls">
+                    <input type="file" id="pdf-upload" multiple accept=".pdf">
+                    <button id="submit-btn" class="btn-primary">Ingest Documents</button>
+                </div>
+                <div id="status-container"></div>
+            </section>
+        </main>
     </div>
 
-    <!-- Scripts -->
+    <!-- Empty stub for pipeline -->
     <script src="cleandocs_pipeline.js"></script>
     <script src="app.js"></script>
 </body>
