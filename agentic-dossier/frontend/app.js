@@ -1,85 +1,84 @@
-/**
- * Agentic Dossier - Frontend Application Stub
- */
-
 document.addEventListener('DOMContentLoaded', () => {
-    const uploadForm = document.getElementById('upload-form');
+    const form = document.getElementById('upload-form');
     const fileInput = document.getElementById('pdf-upload');
-    const statusMessage = document.getElementById('status-message');
-    const consoleOutput = document.getElementById('console-output');
+    const resultsDiv = document.getElementById('results');
 
-    // Tenant ID for data isolation - mock value for this stub
-    const MOCK_TENANT_ID = 'tenant_12345';
+    // Use a dummy tenant ID for now
+    const tenantId = 'tenant-123';
 
-    function logToConsole(message, data = null) {
-        let text = message;
-        if (data) {
-            text += '\n' + JSON.stringify(data, null, 2);
-        }
-        console.log(text);
-
-        const timestamp = new Date().toLocaleTimeString();
-        consoleOutput.textContent = `[${timestamp}] ${text}\n` + consoleOutput.textContent;
-    }
-
-    uploadForm.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         if (fileInput.files.length === 0) {
-            statusMessage.textContent = 'Please select at least one file.';
+            alert('Please select at least one PDF file.');
             return;
         }
 
-        const files = Array.from(fileInput.files);
-        statusMessage.textContent = `Processing ${files.length} file(s)...`;
-        logToConsole(`Starting upload for ${files.length} file(s)`);
+        resultsDiv.innerHTML = '<p>Processing documents...</p>';
 
-        for (const file of files) {
+        for (const file of fileInput.files) {
             try {
-                logToConsole(`Mocking CleanDocs pipeline for file: ${file.name}...`);
+                // 1. Process document locally (Mocked CleanDocs pipeline)
+                console.log(`Processing ${file.name} locally...`);
+                const cleanDocsResult = await processWithCleanDocs(file);
 
-                // Mocking the CleanDocs markdown generation and metrics
-                const mockCleanedMarkdown = `# ${file.name}\n\nThis is mocked text that represents the output of the CleanDocs pipeline locally processing the PDF.`;
-                const mockMetrics = {
-                    original_paragraphs: Math.floor(Math.random() * 50) + 10,
-                    removed_boilerplate: Math.floor(Math.random() * 10) + 2,
-                    textrank_retained: Math.floor(Math.random() * 20) + 5,
-                    simhash_removed: Math.floor(Math.random() * 5)
-                };
-
-                const requestBody = {
+                // 2. Prepare payload
+                const payload = {
                     filename: file.name,
-                    raw_markdown: mockCleanedMarkdown,
-                    metrics: mockMetrics,
-                    tenant_id: MOCK_TENANT_ID
+                    raw_markdown: cleanDocsResult.raw_markdown,
+                    metrics: cleanDocsResult.metrics,
+                    tenant_id: tenantId
                 };
 
-                logToConsole(`Sending POST request for ${file.name} to /api/v1/dossier/${MOCK_TENANT_ID}/documents`);
-
-                const response = await fetch(`/api/v1/dossier/${MOCK_TENANT_ID}/documents`, {
+                // 3. Send to backend
+                console.log(`Sending ${file.name} to backend...`);
+                const response = await fetch(`/api/v1/dossier/${tenantId}/documents`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(requestBody)
+                    body: JSON.stringify(payload)
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const responseData = await response.json();
-                logToConsole(`Success for ${file.name}:`, responseData);
+                const result = await response.json();
+                console.log('Backend response:', result);
+
+                // 4. Update UI
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+
+                const fileSpan = document.createElement('span');
+                fileSpan.textContent = file.name;
+
+                const contentStr = `<strong>File:</strong> ${fileSpan.outerHTML}<br>
+                    <strong>Status:</strong> ${result.status}<br>
+                    <strong>Document ID:</strong> ${result.document_id}<br>
+                    <strong>Language:</strong> ${result.language_detected}`;
+
+                resultItem.innerHTML = contentStr;
+                resultsDiv.appendChild(resultItem);
 
             } catch (error) {
-                console.error('Upload failed:', error);
-                logToConsole(`Error uploading ${file.name}: ${error.message}`);
-                statusMessage.textContent = 'Upload failed. See console for details.';
+                console.error(`Error processing ${file.name}:`, error);
+                const errorItem = document.createElement('div');
+                errorItem.className = 'result-item';
+                errorItem.style.borderLeftColor = 'red';
+
+                const fileSpan = document.createElement('span');
+                fileSpan.textContent = file.name;
+
+                errorItem.innerHTML = `<strong>Error processing ${fileSpan.outerHTML}:</strong> ${error.message}`;
+                resultsDiv.appendChild(errorItem);
             }
         }
 
-        statusMessage.textContent = 'All selected files processed.';
-        // Reset file input
-        fileInput.value = '';
+        // Remove the "Processing..." message
+        if (resultsDiv.firstChild.tagName === 'P') {
+            resultsDiv.removeChild(resultsDiv.firstChild);
+        }
     });
 });
