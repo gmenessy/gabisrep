@@ -1,6 +1,25 @@
 /* Agentic Dossier - Styling matching CI colors */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@font-face {
+    font-family: 'DM Sans';
+    src: url('DMSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DM Sans';
+    src: url('DMSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DM Sans';
+    src: url('DMSans-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
 
 :root {
     /* CI Colors */
