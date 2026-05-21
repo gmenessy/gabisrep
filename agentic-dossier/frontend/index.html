@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agentic Dossier - Document Ingestion</title>
-    <!-- Preconnect for fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Agentic Dossier</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Local font mapping for DM Sans would go here in a real deployment -->
 </head>
 <body>
-    <div class="container">
+    <header>
         <h1>Agentic Dossier</h1>
-        <p>Air-gapped, privacy-first document analysis system.</p>
+        <p>Privacy-first document analysis system</p>
+    </header>
 
+    <main>
         <section class="upload-section">
-            <h2>Upload Document</h2>
+            <h2>Document Ingestion</h2>
             <form id="upload-form">
-                <input type="file" id="pdf-upload" multiple accept=".pdf,.txt,.md">
-                <button type="submit" id="submit-btn">Ingest Documents</button>
+                <div class="file-input-wrapper">
+                    <input type="file" id="pdf-upload" multiple accept=".pdf,.txt,.md">
+                </div>
+                <button type="submit" id="submit-btn">Upload and Process</button>
             </form>
             <div id="status-message"></div>
+            <pre id="response-output"></pre>
         </section>
+    </main>
 
-        <section class="results-section">
-            <h2>Results Console</h2>
-            <pre id="console-output"></pre>
-        </section>
-    </div>
-
-    <!-- Scripts -->
     <script src="cleandocs_pipeline.js"></script>
     <script src="app.js"></script>
 </body>
