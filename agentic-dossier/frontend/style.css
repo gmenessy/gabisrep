@@ -1,160 +1,101 @@
-/* Agentic Dossier - Styling matching CI colors */
+/*
+   Corporate Identity Colors:
+   Lagoon (#00B2A9)
+   Midnight (#003A40)
+   Amarillo (#F1C400)
+   Basil (#00965E)
+*/
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-
-:root {
-    /* CI Colors */
-    --color-midnight: #003A40;
-    --color-midnight-80: rgb(51, 97, 102);
-    --color-midnight-60: rgb(102, 137, 140);
-    --color-midnight-40: rgb(152, 176, 179);
-    --color-midnight-5: rgb(242, 245, 245);
-
-    --color-lagoon: #00B2A9;
-    --color-lagoon-80: rgb(51, 193, 186);
-    --color-lagoon-60: rgb(109, 209, 203);
-    --color-lagoon-40: rgb(153, 224, 220);
-    --color-darklagoon: #009390;
-
-    --color-amarillo: #F1C400;
-    --color-darkamarillo: #F0AF00;
-
-    --color-basil: #00965E;
-
-    --gray-100: #f8f9fa;
-    --gray-200: #F2F2F2;
-    --gray-300: #dee2e6;
-    --gray-400: #ced4da;
-    --gray-500: #adb5bd;
-    --gray-600: #6c757d;
-    --gray-700: #495057;
-    --gray-800: #343a40;
-    --gray-900: #212529;
-
-    --white: #fff;
-    --black: #000;
-    --red: #d90000;
-
-    --lightblue: #f2f5f5;
-    --color-grey-01: #b1b8bb;
-
-    /* Semantic CI Color Mappings */
-    --cd-color1: var(--color-midnight); /* Primary Headline / Text */
-    --cd-color2: var(--color-lagoon);   /* Links / Clickables */
-    --cd-color3: var(--gray-400);
-    --cd-color4: var(--color-amarillo); /* Buttons */
-    --cd-color5: var(--lightblue);      /* Backgrounds / Lines */
-    --cd-color6: var(--black);
-    --cd-color7: #e73f0c;
-
-    /* Typografie */
-    --font-main-family: "DM Sans", Arial, Helvetica, sans-serif;
-    --body-bg: var(--white);
-    --body-color: var(--gray-900);
+@font-face {
+    font-family: 'DM Sans';
+    /* Placeholder for local font file. In a real environment, point to local woff2 files. */
+    src: local('DM Sans'), local('DMSans-Regular');
+    font-weight: normal;
+    font-style: normal;
 }
 
 body {
-    font-family: var(--font-main-family);
-    background-color: var(--body-bg);
-    color: var(--body-color);
-    line-height: 1.5;
+    font-family: 'DM Sans', sans-serif;
+    background-color: #f4f7f6;
+    color: #003A40; /* Midnight */
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
 .container {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: var(--cd-color5);
+    background-color: white;
+    padding: 2rem;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 58, 64, 0.1); /* Subtle midnight shadow */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 600px;
+    width: 100%;
 }
 
 h1 {
-    color: var(--cd-color1);
-    font-size: 3.125rem; /* main-headline50 */
+    color: #00B2A9; /* Lagoon */
     margin-top: 0;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
-}
-
-p {
-    font-size: 1.25rem; /* line-break-text20 */
-    color: var(--gray-700);
 }
 
 h2 {
-    color: var(--cd-color1);
-    font-size: 2.1875rem; /* sub-headline35 */
-    border-bottom: 2px solid var(--cd-color2);
-    padding-bottom: 10px;
-    margin-top: 40px;
-    font-weight: 600;
+    color: #003A40; /* Midnight */
 }
 
 .upload-section {
-    margin-top: 30px;
-    padding: 30px;
-    background-color: var(--white);
-    border: 2px dashed var(--gray-400);
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 2px dashed #00B2A9; /* Lagoon */
     border-radius: 8px;
-    text-align: center;
+    background-color: #f9fbfb;
 }
 
-#pdf-upload {
-    display: block;
-    margin: 20px auto;
-    font-family: var(--font-main-family);
-    font-size: 1rem;
-    color: var(--cd-color1);
-}
-
-#submit-btn {
-    background-color: var(--cd-color4); /* amarillo */
-    color: var(--cd-color1); /* dark text for contrast on yellow */
-    font-family: var(--font-main-family);
+label {
     font-weight: bold;
-    padding: 12px 24px;
+}
+
+input[type="text"] {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: calc(100% - 1rem);
+    margin-bottom: 1rem;
+}
+
+button {
+    background-color: #00965E; /* Basil */
+    color: white;
     border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1.1rem;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-family: 'DM Sans', sans-serif;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
 }
 
-#submit-btn:hover {
-    background-color: var(--color-darkamarillo);
-    transform: translateY(-1px);
-}
-
-#submit-btn:active {
-    transform: translateY(1px);
-    box-shadow: none;
-}
-
-#status-message {
-    margin-top: 15px;
-    font-weight: bold;
-    color: var(--red);
-    font-size: 1.1rem;
+button:hover {
+    background-color: #003A40; /* Midnight */
 }
 
 .results-section {
-    margin-top: 40px;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
 }
 
-#console-output {
-    background-color: var(--cd-color1); /* midnight */
-    color: var(--color-lagoon-40); /* lighter lagoon text */
-    padding: 20px;
-    border-radius: 6px;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    max-height: 400px;
-    overflow-y: auto;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 0.9375rem; /* small-text15 */
-    border-left: 4px solid var(--cd-color2);
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #f4f7f6;
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+    border-radius: 4px;
+    border-left: 4px solid #F1C400; /* Amarillo */
 }
