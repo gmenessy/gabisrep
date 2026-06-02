@@ -6,11 +6,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend source
-COPY backend /app/backend
-COPY frontend /app/frontend
+# Copy application code
+COPY . .
 
-ENV PYTHONPATH=/app/backend
+# Expose port
+EXPOSE 8000
 
-# Run the application
+# Command run by docker-compose
 CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]

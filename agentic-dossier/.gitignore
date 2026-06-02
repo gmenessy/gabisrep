@@ -1,8 +1,10 @@
 data/
 __pycache__/
 *.pyc
-
-# Test artifacts
-backend_server.log
+*.pyo
+*.pyd
+*.webm
 uvicorn_output.log
 dummy.pdf
+verification_screenshot.png
+verify_frontend.py
