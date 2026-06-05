@@ -13,4 +13,4 @@ COPY frontend /app/frontend
 ENV PYTHONPATH=/app/backend
 
 # Run the application
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
