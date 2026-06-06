@@ -1,85 +1,72 @@
-/**
- * Agentic Dossier - Frontend Application Stub
- */
-
 document.addEventListener('DOMContentLoaded', () => {
-    const uploadForm = document.getElementById('upload-form');
+    const form = document.getElementById('upload-form');
     const fileInput = document.getElementById('pdf-upload');
-    const statusMessage = document.getElementById('status-message');
-    const consoleOutput = document.getElementById('console-output');
+    const statusArea = document.getElementById('status-area');
 
-    // Tenant ID for data isolation - mock value for this stub
-    const MOCK_TENANT_ID = 'tenant_12345';
+    // Default tenant for testing
+    const tenantId = 'default-tenant';
 
-    function logToConsole(message, data = null) {
-        let text = message;
-        if (data) {
-            text += '\n' + JSON.stringify(data, null, 2);
-        }
-        console.log(text);
-
-        const timestamp = new Date().toLocaleTimeString();
-        consoleOutput.textContent = `[${timestamp}] ${text}\n` + consoleOutput.textContent;
-    }
-
-    uploadForm.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        if (fileInput.files.length === 0) {
-            statusMessage.textContent = 'Please select at least one file.';
+        statusArea.innerHTML = ''; // Clear previous status using safe method, here it's just clearing
+
+        const files = fileInput.files;
+        if (files.length === 0) {
+            statusArea.textContent = 'Please select at least one PDF file.';
             return;
         }
 
-        const files = Array.from(fileInput.files);
-        statusMessage.textContent = `Processing ${files.length} file(s)...`;
-        logToConsole(`Starting upload for ${files.length} file(s)`);
-
+        // Process all selected files
         for (const file of files) {
+            const statusLine = document.createElement('p');
+            statusLine.textContent = `Processing ${file.name}...`;
+            statusArea.appendChild(statusLine);
+
+            // Mock CleanDocs pipeline execution
+            const mockPayload = {
+                filename: file.name,
+                raw_markdown: `# Dummy Markdown for ${file.name}\n\nThis is a mock text reduction.`,
+                metrics: {
+                    original_paragraphs: 100,
+                    removed_boilerplate: 20,
+                    textrank_retained: 30,
+                    simhash_removed: 50
+                },
+                tenant_id: tenantId
+            };
+
             try {
-                logToConsole(`Mocking CleanDocs pipeline for file: ${file.name}...`);
-
-                // Mocking the CleanDocs markdown generation and metrics
-                const mockCleanedMarkdown = `# ${file.name}\n\nThis is mocked text that represents the output of the CleanDocs pipeline locally processing the PDF.`;
-                const mockMetrics = {
-                    original_paragraphs: Math.floor(Math.random() * 50) + 10,
-                    removed_boilerplate: Math.floor(Math.random() * 10) + 2,
-                    textrank_retained: Math.floor(Math.random() * 20) + 5,
-                    simhash_removed: Math.floor(Math.random() * 5)
-                };
-
-                const requestBody = {
-                    filename: file.name,
-                    raw_markdown: mockCleanedMarkdown,
-                    metrics: mockMetrics,
-                    tenant_id: MOCK_TENANT_ID
-                };
-
-                logToConsole(`Sending POST request for ${file.name} to /api/v1/dossier/${MOCK_TENANT_ID}/documents`);
-
-                const response = await fetch(`/api/v1/dossier/${MOCK_TENANT_ID}/documents`, {
+                const response = await fetch(`/api/v1/dossier/${tenantId}/documents`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(requestBody)
+                    body: JSON.stringify(mockPayload)
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Ingestion response:', data);
+
+                    const successMsg = document.createElement('span');
+                    successMsg.style.color = 'var(--color-basil)';
+                    successMsg.textContent = ` Success! Doc ID: ${data.document_id}`;
+                    statusLine.appendChild(successMsg);
+                } else {
+                    console.error('Ingestion failed', response.statusText);
+                    const errMsg = document.createElement('span');
+                    errMsg.style.color = 'red';
+                    errMsg.textContent = ` Failed: ${response.statusText}`;
+                    statusLine.appendChild(errMsg);
                 }
-
-                const responseData = await response.json();
-                logToConsole(`Success for ${file.name}:`, responseData);
-
             } catch (error) {
-                console.error('Upload failed:', error);
-                logToConsole(`Error uploading ${file.name}: ${error.message}`);
-                statusMessage.textContent = 'Upload failed. See console for details.';
+                console.error('Network error during ingestion', error);
+                const networkErrMsg = document.createElement('span');
+                networkErrMsg.style.color = 'red';
+                networkErrMsg.textContent = ` Network Error.`;
+                statusLine.appendChild(networkErrMsg);
             }
         }
-
-        statusMessage.textContent = 'All selected files processed.';
-        // Reset file input
-        fileInput.value = '';
     });
 });
