@@ -1,32 +1,17 @@
-from fastapi import APIRouter, Path, Body
-from app.models.schemas import DocumentIngestRequest, DocumentIngestResponse
+from fastapi import APIRouter
+from backend.app.models.schemas import DocumentIngestRequest, DocumentIngestResponse
 import uuid
-import logging
 
 router = APIRouter()
-logger = logging.getLogger(__name__)
 
-@router.post("/api/v1/dossier/{tenant_id}/documents", response_model=DocumentIngestResponse)
-async def ingest_document(
-    tenant_id: str,
-    request: DocumentIngestRequest
-):
-    """
-    Ingest a document into the Agentic Dossier.
-    The text should be reduced and cleaned markdown.
-    """
-    # Mock language detection
-    language_detected = "de"
+@router.post("/v1/dossier/{tenant_id}/documents", response_model=DocumentIngestResponse)
+async def ingest_document(tenant_id: str, request: DocumentIngestRequest) -> DocumentIngestResponse:
+    # Print metrics to the console as requested
+    print(f"Metrics received for tenant {tenant_id}: {request.metrics.model_dump()}")
 
-    # Print metrics to console
-    logger.info(f"Received document ingestion request for tenant: {tenant_id}, file: {request.filename}")
-    logger.info(f"Ingestion metrics: {request.metrics.model_dump()}")
-
-    # Return generated UUID
-    document_id = uuid.uuid4()
-
+    # Mock language detection and return a generated UUID
     return DocumentIngestResponse(
-        document_id=document_id,
+        document_id=uuid.uuid4(),
         status="processing",
-        language_detected=language_detected
+        language_detected="de"
     )
