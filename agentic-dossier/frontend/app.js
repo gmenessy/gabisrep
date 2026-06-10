@@ -1,85 +1,94 @@
-/**
- * Agentic Dossier - Frontend Application Stub
- */
-
 document.addEventListener('DOMContentLoaded', () => {
-    const uploadForm = document.getElementById('upload-form');
+    const submitBtn = document.getElementById('submit-btn');
     const fileInput = document.getElementById('pdf-upload');
-    const statusMessage = document.getElementById('status-message');
-    const consoleOutput = document.getElementById('console-output');
+    const resultsContainer = document.getElementById('results');
 
-    // Tenant ID for data isolation - mock value for this stub
-    const MOCK_TENANT_ID = 'tenant_12345';
+    // Hardcoded tenant ID for now
+    const tenantId = 'local-tenant-001';
 
-    function logToConsole(message, data = null) {
-        let text = message;
-        if (data) {
-            text += '\n' + JSON.stringify(data, null, 2);
-        }
-        console.log(text);
+    submitBtn.addEventListener('click', async () => {
+        const files = fileInput.files;
 
-        const timestamp = new Date().toLocaleTimeString();
-        consoleOutput.textContent = `[${timestamp}] ${text}\n` + consoleOutput.textContent;
-    }
-
-    uploadForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        if (fileInput.files.length === 0) {
-            statusMessage.textContent = 'Please select at least one file.';
+        if (files.length === 0) {
+            alert('Please select at least one PDF file.');
             return;
         }
 
-        const files = Array.from(fileInput.files);
-        statusMessage.textContent = `Processing ${files.length} file(s)...`;
-        logToConsole(`Starting upload for ${files.length} file(s)`);
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Processing...';
+        resultsContainer.innerHTML = '';
 
         for (const file of files) {
             try {
-                logToConsole(`Mocking CleanDocs pipeline for file: ${file.name}...`);
+                // 1. Process document locally using mock CleanDocs pipeline
+                const processedData = await processDocument(file);
 
-                // Mocking the CleanDocs markdown generation and metrics
-                const mockCleanedMarkdown = `# ${file.name}\n\nThis is mocked text that represents the output of the CleanDocs pipeline locally processing the PDF.`;
-                const mockMetrics = {
-                    original_paragraphs: Math.floor(Math.random() * 50) + 10,
-                    removed_boilerplate: Math.floor(Math.random() * 10) + 2,
-                    textrank_retained: Math.floor(Math.random() * 20) + 5,
-                    simhash_removed: Math.floor(Math.random() * 5)
-                };
-
-                const requestBody = {
+                // 2. Prepare payload
+                const payload = {
                     filename: file.name,
-                    raw_markdown: mockCleanedMarkdown,
-                    metrics: mockMetrics,
-                    tenant_id: MOCK_TENANT_ID
+                    raw_markdown: processedData.raw_markdown,
+                    metrics: processedData.metrics,
+                    tenant_id: tenantId
                 };
 
-                logToConsole(`Sending POST request for ${file.name} to /api/v1/dossier/${MOCK_TENANT_ID}/documents`);
-
-                const response = await fetch(`/api/v1/dossier/${MOCK_TENANT_ID}/documents`, {
+                // 3. Send to backend
+                const response = await fetch(`/api/v1/dossier/${tenantId}/documents`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(requestBody)
+                    body: JSON.stringify(payload)
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const responseData = await response.json();
-                logToConsole(`Success for ${file.name}:`, responseData);
+                console.log('Backend response:', responseData);
+
+                // 4. Display result
+                const resultElement = document.createElement('div');
+                resultElement.className = 'result-item';
+
+                // Safely add content
+                const titleElement = document.createElement('strong');
+                titleElement.textContent = `File: ${file.name}`;
+
+                const statusElement = document.createElement('p');
+                statusElement.textContent = `Status: ${responseData.status} | Lang: ${responseData.language_detected}`;
+
+                const idElement = document.createElement('p');
+                idElement.textContent = `Document ID: ${responseData.document_id}`;
+
+                resultElement.appendChild(titleElement);
+                resultElement.appendChild(statusElement);
+                resultElement.appendChild(idElement);
+
+                resultsContainer.appendChild(resultElement);
 
             } catch (error) {
-                console.error('Upload failed:', error);
-                logToConsole(`Error uploading ${file.name}: ${error.message}`);
-                statusMessage.textContent = 'Upload failed. See console for details.';
+                console.error(`Error processing ${file.name}:`, error);
+
+                const errorElement = document.createElement('div');
+                errorElement.className = 'result-item';
+                errorElement.style.borderLeftColor = 'red';
+
+                const titleElement = document.createElement('strong');
+                titleElement.textContent = `Error processing: ${file.name}`;
+
+                const errorTextElement = document.createElement('p');
+                errorTextElement.textContent = error.message;
+
+                errorElement.appendChild(titleElement);
+                errorElement.appendChild(errorTextElement);
+
+                resultsContainer.appendChild(errorElement);
             }
         }
 
-        statusMessage.textContent = 'All selected files processed.';
-        // Reset file input
-        fileInput.value = '';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Process Documents';
+        fileInput.value = ''; // clear input
     });
 });
