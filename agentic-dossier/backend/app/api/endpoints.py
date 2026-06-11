@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 async def ingest_document(
     tenant_id: str,
     request: DocumentIngestRequest
-):
+) -> DocumentIngestResponse:
     """
     Ingest a document into the Agentic Dossier.
     The text should be reduced and cleaned markdown.
