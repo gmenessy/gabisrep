@@ -1,13 +1,14 @@
 version: '3.8'
 
 services:
-  agentic-dossier:
+  backend:
     build: .
     ports:
-      - "8000:8000"
+      - "3000:3000"
     volumes:
-      - ./data:/app/data
-      - ./frontend:/app/frontend
       - ./backend:/app/backend
+      - ./frontend:/app/frontend
+      - ./data:/app/data
     environment:
-      - APP_ENV=development
+      - PYTHONPATH=/app/backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 3000
