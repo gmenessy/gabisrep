@@ -1,85 +1,69 @@
-/**
- * Agentic Dossier - Frontend Application Stub
- */
-
 document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('upload-form');
     const fileInput = document.getElementById('pdf-upload');
     const statusMessage = document.getElementById('status-message');
-    const consoleOutput = document.getElementById('console-output');
 
-    // Tenant ID for data isolation - mock value for this stub
-    const MOCK_TENANT_ID = 'tenant_12345';
-
-    function logToConsole(message, data = null) {
-        let text = message;
-        if (data) {
-            text += '\n' + JSON.stringify(data, null, 2);
-        }
-        console.log(text);
-
-        const timestamp = new Date().toLocaleTimeString();
-        consoleOutput.textContent = `[${timestamp}] ${text}\n` + consoleOutput.textContent;
-    }
+    // Default tenant for scaffolding
+    const tenantId = 'tenant-123';
 
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         if (fileInput.files.length === 0) {
-            statusMessage.textContent = 'Please select at least one file.';
+            showMessage('Please select at least one file.', 'error');
             return;
         }
 
-        const files = Array.from(fileInput.files);
-        statusMessage.textContent = `Processing ${files.length} file(s)...`;
-        logToConsole(`Starting upload for ${files.length} file(s)`);
+        statusMessage.textContent = 'Processing files...';
+        statusMessage.className = '';
 
-        for (const file of files) {
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const file of fileInput.files) {
             try {
-                logToConsole(`Mocking CleanDocs pipeline for file: ${file.name}...`);
+                // Mock CleanDocs pipeline processing
+                const cleanedData = await window.mockCleanDocsPipeline(file);
 
-                // Mocking the CleanDocs markdown generation and metrics
-                const mockCleanedMarkdown = `# ${file.name}\n\nThis is mocked text that represents the output of the CleanDocs pipeline locally processing the PDF.`;
-                const mockMetrics = {
-                    original_paragraphs: Math.floor(Math.random() * 50) + 10,
-                    removed_boilerplate: Math.floor(Math.random() * 10) + 2,
-                    textrank_retained: Math.floor(Math.random() * 20) + 5,
-                    simhash_removed: Math.floor(Math.random() * 5)
+                // Prepare request payload matching DocumentIngestRequest Pydantic model
+                const payload = {
+                    filename: cleanedData.filename,
+                    raw_markdown: cleanedData.markdown,
+                    metrics: cleanedData.metrics,
+                    tenant_id: tenantId
                 };
 
-                const requestBody = {
-                    filename: file.name,
-                    raw_markdown: mockCleanedMarkdown,
-                    metrics: mockMetrics,
-                    tenant_id: MOCK_TENANT_ID
-                };
-
-                logToConsole(`Sending POST request for ${file.name} to /api/v1/dossier/${MOCK_TENANT_ID}/documents`);
-
-                const response = await fetch(`/api/v1/dossier/${MOCK_TENANT_ID}/documents`, {
+                const response = await fetch(`/api/v1/dossier/${tenantId}/documents`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(requestBody)
+                    body: JSON.stringify(payload)
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const responseData = await response.json();
-                logToConsole(`Success for ${file.name}:`, responseData);
-
+                const data = await response.json();
+                console.log(`Success for ${file.name}:`, data);
+                successCount++;
             } catch (error) {
-                console.error('Upload failed:', error);
-                logToConsole(`Error uploading ${file.name}: ${error.message}`);
-                statusMessage.textContent = 'Upload failed. See console for details.';
+                console.error(`Error processing ${file.name}:`, error);
+                failCount++;
             }
         }
 
-        statusMessage.textContent = 'All selected files processed.';
-        // Reset file input
-        fileInput.value = '';
+        // Sanitize output by setting textContent instead of innerHTML
+        if (failCount === 0) {
+            showMessage(`Successfully ingested ${successCount} document(s). Check console for details.`, 'success');
+        } else {
+            showMessage(`Processed with errors: ${successCount} succeeded, ${failCount} failed.`, 'error');
+        }
     });
+
+    function showMessage(text, className) {
+        statusMessage.textContent = text;
+        statusMessage.className = className;
+    }
 });
