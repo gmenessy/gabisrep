@@ -3,33 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agentic Dossier - Document Ingestion</title>
-    <!-- Preconnect for fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Agentic Dossier</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Embedding DM Sans font to avoid external requests, keeping it local */
+        @font-face {
+            font-family: 'DM Sans';
+            font-style: normal;
+            font-weight: 400;
+            src: local('DM Sans'), local('DMSans-Regular');
+            /* Fallback to sans-serif if not found locally, we would typically download the woff2 file and serve it in a real air-gapped system. */
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
+    <header>
         <h1>Agentic Dossier</h1>
-        <p>Air-gapped, privacy-first document analysis system.</p>
+        <p>Air-gapped, privacy-first document analysis system</p>
+    </header>
 
-        <section class="upload-section">
-            <h2>Upload Document</h2>
+    <main>
+        <section id="upload-section">
+            <h2>Upload Documents</h2>
             <form id="upload-form">
-                <input type="file" id="pdf-upload" multiple accept=".pdf,.txt,.md">
-                <button type="submit" id="submit-btn">Ingest Documents</button>
+                <input type="file" id="pdf-upload" accept="application/pdf" multiple required>
+                <button type="submit">Ingest Document</button>
             </form>
-            <div id="status-message"></div>
         </section>
 
-        <section class="results-section">
-            <h2>Results Console</h2>
-            <pre id="console-output"></pre>
+        <section id="status-section">
+            <h2>Status</h2>
+            <div id="status-messages"></div>
         </section>
-    </div>
+    </main>
 
-    <!-- Scripts -->
     <script src="cleandocs_pipeline.js"></script>
     <script src="app.js"></script>
 </body>
