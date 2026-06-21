@@ -6,3 +6,5 @@ __pycache__/
 backend_server.log
 uvicorn_output.log
 dummy.pdf
+verify_frontend.py
+verification_screenshot.png
