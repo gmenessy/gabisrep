@@ -1,6 +1,11 @@
 /* Agentic Dossier - Styling matching CI colors */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('fonts/dmsans.woff2') format('woff2');
+}
 
 :root {
     /* CI Colors */
