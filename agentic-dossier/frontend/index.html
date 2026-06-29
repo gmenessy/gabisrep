@@ -3,33 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agentic Dossier - Document Ingestion</title>
-    <!-- Preconnect for fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Agentic Dossier</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Embedded Local font logic for DM Sans as per requirements */
+        @font-face {
+            font-family: 'DM Sans';
+            src: local('DM Sans'); /* We'll assume the local machine has the font for now to avoid CDNs */
+        }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #003A40; /* Midnight */
+            color: #00B2A9; /* Lagoon */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #00965E; /* Basil */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #007a4a;
+        }
+        .highlight {
+            color: #F1C400; /* Amarillo */
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Agentic Dossier</h1>
-        <p>Air-gapped, privacy-first document analysis system.</p>
-
-        <section class="upload-section">
-            <h2>Upload Document</h2>
-            <form id="upload-form">
-                <input type="file" id="pdf-upload" multiple accept=".pdf,.txt,.md">
-                <button type="submit" id="submit-btn">Ingest Documents</button>
-            </form>
-            <div id="status-message"></div>
-        </section>
-
-        <section class="results-section">
-            <h2>Results Console</h2>
-            <pre id="console-output"></pre>
-        </section>
+        <h1 class="highlight">Agentic Dossier</h1>
+        <p>Document Ingestion</p>
+        <input type="file" id="pdf-upload" multiple>
+        <button id="submit-btn">Upload</button>
+        <div id="output" style="margin-top:20px;color:black;"></div>
     </div>
 
-    <!-- Scripts -->
     <script src="cleandocs_pipeline.js"></script>
     <script src="app.js"></script>
 </body>
