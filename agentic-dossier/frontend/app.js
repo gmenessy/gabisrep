@@ -1,85 +1,64 @@
-/**
- * Agentic Dossier - Frontend Application Stub
- */
-
-document.addEventListener('DOMContentLoaded', () => {
-    const uploadForm = document.getElementById('upload-form');
+document.getElementById('submit-btn').addEventListener('click', async () => {
     const fileInput = document.getElementById('pdf-upload');
-    const statusMessage = document.getElementById('status-message');
-    const consoleOutput = document.getElementById('console-output');
+    const outputDiv = document.getElementById('output');
 
-    // Tenant ID for data isolation - mock value for this stub
-    const MOCK_TENANT_ID = 'tenant_12345';
-
-    function logToConsole(message, data = null) {
-        let text = message;
-        if (data) {
-            text += '\n' + JSON.stringify(data, null, 2);
-        }
-        console.log(text);
-
-        const timestamp = new Date().toLocaleTimeString();
-        consoleOutput.textContent = `[${timestamp}] ${text}\n` + consoleOutput.textContent;
+    if (!fileInput.files.length) {
+        outputDiv.textContent = "Please select at least one file.";
+        return;
     }
 
-    uploadForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    const tenantId = "tenant-123"; // Mock tenant ID
 
-        if (fileInput.files.length === 0) {
-            statusMessage.textContent = 'Please select at least one file.';
-            return;
-        }
+    outputDiv.textContent = "Uploading...";
 
-        const files = Array.from(fileInput.files);
-        statusMessage.textContent = `Processing ${files.length} file(s)...`;
-        logToConsole(`Starting upload for ${files.length} file(s)`);
+    for (const file of fileInput.files) {
+        console.log(`Processing file: ${file.name}`);
 
-        for (const file of files) {
-            try {
-                logToConsole(`Mocking CleanDocs pipeline for file: ${file.name}...`);
+        // Mock CleanDocs pipeline result
+        const payload = {
+            filename: file.name,
+            raw_markdown: `# Dummy Content\nThis is a mock clean document for ${file.name}`,
+            metrics: {
+                original_paragraphs: 100,
+                removed_boilerplate: 20,
+                textrank_retained: 50,
+                simhash_removed: 30
+            },
+            tenant_id: tenantId
+        };
 
-                // Mocking the CleanDocs markdown generation and metrics
-                const mockCleanedMarkdown = `# ${file.name}\n\nThis is mocked text that represents the output of the CleanDocs pipeline locally processing the PDF.`;
-                const mockMetrics = {
-                    original_paragraphs: Math.floor(Math.random() * 50) + 10,
-                    removed_boilerplate: Math.floor(Math.random() * 10) + 2,
-                    textrank_retained: Math.floor(Math.random() * 20) + 5,
-                    simhash_removed: Math.floor(Math.random() * 5)
-                };
+        try {
+            const response = await fetch(`/api/v1/dossier/${tenantId}/documents`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
 
-                const requestBody = {
-                    filename: file.name,
-                    raw_markdown: mockCleanedMarkdown,
-                    metrics: mockMetrics,
-                    tenant_id: MOCK_TENANT_ID
-                };
-
-                logToConsole(`Sending POST request for ${file.name} to /api/v1/dossier/${MOCK_TENANT_ID}/documents`);
-
-                const response = await fetch(`/api/v1/dossier/${MOCK_TENANT_ID}/documents`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const responseData = await response.json();
-                logToConsole(`Success for ${file.name}:`, responseData);
-
-            } catch (error) {
-                console.error('Upload failed:', error);
-                logToConsole(`Error uploading ${file.name}: ${error.message}`);
-                statusMessage.textContent = 'Upload failed. See console for details.';
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        }
 
-        statusMessage.textContent = 'All selected files processed.';
-        // Reset file input
-        fileInput.value = '';
-    });
+            const data = await response.json();
+            console.log("Response from server:", data);
+
+            // Create element safely to prevent XSS
+            const p = document.createElement('p');
+            p.textContent = `Uploaded ${file.name}: Status ${data.status}, ID ${data.document_id}`;
+            outputDiv.appendChild(p);
+
+        } catch (error) {
+            console.error("Error uploading file:", error);
+            const p = document.createElement('p');
+            p.textContent = `Error uploading ${file.name}`;
+            p.style.color = "red";
+            outputDiv.appendChild(p);
+        }
+    }
+
+    // Clear initial uploading text
+    if (outputDiv.firstChild && outputDiv.firstChild.textContent === "Uploading...") {
+        outputDiv.removeChild(outputDiv.firstChild);
+    }
 });
