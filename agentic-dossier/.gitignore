@@ -5,4 +5,7 @@ __pycache__/
 # Test artifacts
 backend_server.log
 uvicorn_output.log
+*.webm
+verify_frontend.py
+verification_screenshot.png
 dummy.pdf
