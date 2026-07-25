@@ -1,6 +1,5 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from uuid import UUID
-from typing import Dict, Any
 
 class IngestionMetrics(BaseModel):
     original_paragraphs: int
@@ -10,9 +9,9 @@ class IngestionMetrics(BaseModel):
 
 class DocumentIngestRequest(BaseModel):
     filename: str
-    raw_markdown: str = Field(..., description="The cleaned text from the frontend")
+    raw_markdown: str
     metrics: IngestionMetrics
-    tenant_id: str = Field(..., description="For strict data isolation")
+    tenant_id: str
 
 class DocumentIngestResponse(BaseModel):
     document_id: UUID

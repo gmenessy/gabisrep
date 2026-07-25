@@ -1,85 +1,65 @@
-/**
- * Agentic Dossier - Frontend Application Stub
- */
+document.addEventListener("DOMContentLoaded", () => {
+    const uploadBtn = document.getElementById("upload-btn");
+    const fileInput = document.getElementById("pdf-upload");
+    const statusMessage = document.getElementById("status-message");
 
-document.addEventListener('DOMContentLoaded', () => {
-    const uploadForm = document.getElementById('upload-form');
-    const fileInput = document.getElementById('pdf-upload');
-    const statusMessage = document.getElementById('status-message');
-    const consoleOutput = document.getElementById('console-output');
+    // Mock tenant ID for now
+    const tenantId = "tenant-local-dev";
 
-    // Tenant ID for data isolation - mock value for this stub
-    const MOCK_TENANT_ID = 'tenant_12345';
+    uploadBtn.addEventListener("click", async () => {
+        const files = fileInput.files;
 
-    function logToConsole(message, data = null) {
-        let text = message;
-        if (data) {
-            text += '\n' + JSON.stringify(data, null, 2);
-        }
-        console.log(text);
-
-        const timestamp = new Date().toLocaleTimeString();
-        consoleOutput.textContent = `[${timestamp}] ${text}\n` + consoleOutput.textContent;
-    }
-
-    uploadForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        if (fileInput.files.length === 0) {
-            statusMessage.textContent = 'Please select at least one file.';
+        if (files.length === 0) {
+            statusMessage.textContent = "Please select at least one PDF file.";
+            statusMessage.style.backgroundColor = "#F1C400"; // Amarillo
+            statusMessage.style.color = "#003A40";
             return;
         }
 
-        const files = Array.from(fileInput.files);
-        statusMessage.textContent = `Processing ${files.length} file(s)...`;
-        logToConsole(`Starting upload for ${files.length} file(s)`);
+        statusMessage.textContent = "Processing files...";
+        statusMessage.style.backgroundColor = "#f5f7f8";
+        statusMessage.style.color = "#003A40";
 
         for (const file of files) {
             try {
-                logToConsole(`Mocking CleanDocs pipeline for file: ${file.name}...`);
+                // 1. Process document locally via CleanDocs pipeline
+                const processedDoc = await CleanDocsPipeline.processDocument(file);
 
-                // Mocking the CleanDocs markdown generation and metrics
-                const mockCleanedMarkdown = `# ${file.name}\n\nThis is mocked text that represents the output of the CleanDocs pipeline locally processing the PDF.`;
-                const mockMetrics = {
-                    original_paragraphs: Math.floor(Math.random() * 50) + 10,
-                    removed_boilerplate: Math.floor(Math.random() * 10) + 2,
-                    textrank_retained: Math.floor(Math.random() * 20) + 5,
-                    simhash_removed: Math.floor(Math.random() * 5)
+                // 2. Prepare payload
+                const payload = {
+                    filename: processedDoc.filename,
+                    raw_markdown: processedDoc.raw_markdown,
+                    metrics: processedDoc.metrics,
+                    tenant_id: tenantId
                 };
 
-                const requestBody = {
-                    filename: file.name,
-                    raw_markdown: mockCleanedMarkdown,
-                    metrics: mockMetrics,
-                    tenant_id: MOCK_TENANT_ID
-                };
-
-                logToConsole(`Sending POST request for ${file.name} to /api/v1/dossier/${MOCK_TENANT_ID}/documents`);
-
-                const response = await fetch(`/api/v1/dossier/${MOCK_TENANT_ID}/documents`, {
+                // 3. Send to FastAPI backend
+                const response = await fetch(`/api/v1/dossier/${tenantId}/documents`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(requestBody)
+                    body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log(`Success for ${file.name}:`, result);
+                    statusMessage.textContent = `Successfully processed ${file.name}. Document ID: ${result.document_id}`;
+                    statusMessage.style.backgroundColor = "#00965E"; // Basil
+                    statusMessage.style.color = "white";
+                } else {
+                    console.error(`Error for ${file.name}:`, response.statusText);
+                    statusMessage.textContent = `Error processing ${file.name}: ${response.statusText}`;
+                    statusMessage.style.backgroundColor = "red";
+                    statusMessage.style.color = "white";
                 }
-
-                const responseData = await response.json();
-                logToConsole(`Success for ${file.name}:`, responseData);
-
             } catch (error) {
-                console.error('Upload failed:', error);
-                logToConsole(`Error uploading ${file.name}: ${error.message}`);
-                statusMessage.textContent = 'Upload failed. See console for details.';
+                console.error(`Exception for ${file.name}:`, error);
+                statusMessage.textContent = `Exception processing ${file.name}: ${error.message}`;
+                statusMessage.style.backgroundColor = "red";
+                statusMessage.style.color = "white";
             }
         }
-
-        statusMessage.textContent = 'All selected files processed.';
-        // Reset file input
-        fileInput.value = '';
     });
 });
