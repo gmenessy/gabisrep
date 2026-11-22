@@ -1,23 +1,28 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from app.api import endpoints
 import os
-
-from app.api.endpoints import router as endpoints_router
 import logging
 
 # Configure basic logging
 logging.basicConfig(level=logging.INFO)
 
-app = FastAPI(title="Agentic Dossier", description="Air-gapped, privacy-first document analysis system")
+app = FastAPI(title="Agentic Dossier")
 
-# Include routers
-app.include_router(endpoints_router)
+# Set up CORS if needed (good practice for local dev)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Define paths
-FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend")
+# Register API routes
+app.include_router(endpoints.router, prefix="/api/v1")
 
-# Ensure the frontend directory exists before mounting
-if os.path.isdir(FRONTEND_DIR):
-    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
-else:
-    logging.warning(f"Frontend directory not found at {FRONTEND_DIR}. Please make sure it exists.")
+# Mount frontend directory as static files using absolute path
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+frontend_path = os.path.join(BASE_DIR, "frontend")
+app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
